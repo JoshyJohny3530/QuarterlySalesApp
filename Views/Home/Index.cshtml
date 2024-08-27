@@ -1,0 +1,109 @@
+﻿@model PaginatedList<QuarterlySalesApp.Models.SalesData>
+@{
+    ViewData["Title"] = "Quarterly Sales";
+}
+
+<h2>Quarterly Sales</h2>
+
+<form method="get" class="form-inline mb-3">
+    <div class="form-group mr-2">
+        <label for="searchEmployee" class="mr-2">Employee:</label>
+        <select name="searchEmployee" id="searchEmployee" class="form-control">
+            <option value="">All</option>
+            @foreach (var employee in ViewBag.Employees)
+            {
+                <option value="@employee.FullName">@employee.FullName</option>
+            }
+        </select>
+    </div>
+    <div class="form-group mr-2">
+        <label for="searchYear" class="mr-2">Year:</label>
+        <select name="searchYear" id="searchYear" class="form-control">
+            <option value="">All</option>
+            @for (int i = 2001; i <= 2100; i++)
+            {
+                <option value="@i">@i</option>
+            }
+        </select>
+    </div>
+    <div class="form-group mr-2">
+        <label for="searchQuarter" class="mr-2">Quarter:</label>
+        <select name="searchQuarter" id="searchQuarter" class="form-control">
+            <option value="">All</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary mr-2">Filter</button>
+    <a href="/" class="btn btn-outline-secondary">Clear</a>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["EmployeeSortParm"]">Employee</a>
+            </th>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["YearSortParm"]">Year</a>
+            </th>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["QuarterSortParm"]">Quarter</a>
+            </th>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["AmountSortParm"]">Amount</a>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Employee?.FirstName @item.Employee?.LastName</td>
+                <td>@item.Year</td>
+                <td>@item.Quarter</td>
+                <td>@item.Amount.ToString("C")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <strong>Total Sales:</strong> @Model.Sum(s => s.Amount).ToString("C")
+</div>
+<br />
+<br />
+
+<div class="pagination">
+    @if (Model.HasPreviousPage)
+    {
+        <a asp-action="Index" asp-route-pageNumber="@(Model.PageIndex - 1)" class="btn btn-outline-primary">Previous</a>
+    }
+    else
+    {
+        <span class="btn btn-outline-secondary disabled">Previous</span>
+    }
+
+    @for (int i = 1; i <= Model.TotalPages; i++)
+    {
+        if (i == Model.PageIndex)
+        {
+            <span class="btn btn-primary">@i</span>
+        }
+        else
+        {
+            <a asp-action="Index" asp-route-pageNumber="@i" class="btn btn-outline-primary">@i</a>
+        }
+    }
+
+    @if (Model.HasNextPage)
+    {
+        <a asp-action="Index" asp-route-pageNumber="@(Model.PageIndex + 1)" class="btn btn-outline-primary">Next</a>
+    }
+    else
+    {
+        <span class="btn btn-outline-secondary disabled">Next</span>
+    }
+</div>
